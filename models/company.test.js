@@ -31,7 +31,7 @@ describe("create", function () {
     expect(company).toEqual(newCompany);
 
     const result = await db.query(
-          `SELECT handle, name, description, num_employees, logo_url
+      `SELECT handle, name, description, num_employees, logo_url
            FROM companies
            WHERE handle = 'new'`);
     expect(result.rows).toEqual([
@@ -60,44 +60,45 @@ describe("create", function () {
 
 describe("findAll", function () {
   const allCompanies =
-  [
-    {
-      handle: "c1",
-      name: "C1",
-      description: "Desc1",
-      numEmployees: 1,
-      logoUrl: "http://c1.img",
-    },
-    {
-      handle: "c2",
-      name: "C2",
-      description: "Desc2",
-      numEmployees: 2,
-      logoUrl: "http://c2.img",
-    },
-    {
-      handle: "c3",
-      name: "C3",
-      description: "Desc3",
-      numEmployees: 3,
-      logoUrl: "http://c3.img",
-    },
-  ];
+    [
+      {
+        handle: "c1",
+        name: "C1",
+        description: "Desc1",
+        numEmployees: 1,
+        logoUrl: "http://c1.img",
+      },
+      {
+        handle: "c2",
+        name: "C2",
+        description: "Desc2",
+        numEmployees: 2,
+        logoUrl: "http://c2.img",
+      },
+      {
+        handle: "c3",
+        name: "C3",
+        description: "Desc3",
+        numEmployees: 3,
+        logoUrl: "http://c3.img",
+      },
+    ];
 
   test("works: no filter", async function () {
     let companies = await Company.findAll();
     expect(companies).toEqual(allCompanies);
   });
 
-  //FILTERING TESTS*************************************************
-  test("works: name filter ('C')", async function(){
-    const nameFilter = {name: "C"};
-    const companies = await Company.filter({nameFilter});
+  /**FILTERING TESTS*************************************************/
+
+  test("works: name filter ('C')", async function () {
+    const nameFilter = { name: "C" };
+    const companies = await Company.filter({ nameFilter });
     expect(companies).toEqual(allCompanies);
   });
 
-  test("works: name filter ('1')", async function(){
-    const nameFilter = {name: "1"};
+  test("works: name filter ('1')", async function () {
+    const nameFilter = { name: "1" };
     const companies = await Company.filter(nameFilter);
     expect(companies).toEqual(
       [
@@ -112,22 +113,83 @@ describe("findAll", function () {
     )
   });
 
-  test("works: name filter with no returning results", async function(){
-    const nameFilter = {name: "DOG"};
+  test("works: name filter with no returning results", async function () {
+    const nameFilter = { name: "DOG" };
     const companies = await Company.filter(nameFilter);
     expect(companies).toEqual([]);
   });
 
-  test("works: minEmployees > maxEmployees, throws err", async function(){
-    const empFilter = { minEmployees: 9001, maxEmployees: 75 };
-    try {
-      await Company.filter(empFilter);
-      fail();
-    } catch (err) {
-      expect(err instanceof BadRequestError).toBeTruthy();
-    }
+  test("works: minEmployees only", async function(){
+    const empFilter = { minEmployees: 2 };
+    const companies = await Company.filter(empFilter);
+
+    expect(companies).toEqual(
+      [
+        {
+          handle: "c2",
+          name: "C2",
+          description: "Desc2",
+          numEmployees: 2,
+          logoUrl: "http://c2.img",
+        },
+        {
+          handle: "c3",
+          name: "C3",
+          description: "Desc3",
+          numEmployees: 3,
+          logoUrl: "http://c3.img",
+        }
+      ]
+    )
   });
 
+  test("works: maxEmployees only", async function(){
+    const empFilter = { maxEmployees: 2 };
+    const companies = await Company.filter(empFilter);
+
+    expect(companies).toEqual(
+      [
+        {
+          handle: "c1",
+          name: "C1",
+          description: "Desc1",
+          numEmployees: 1,
+          logoUrl: "http://c1.img",
+        },
+        {
+          handle: "c2",
+          name: "C2",
+          description: "Desc2",
+          numEmployees: 2,
+          logoUrl: "http://c2.img",
+        }
+      ]
+    );
+  });
+
+  test("works: minEmployees < maxEmployees", async function () {
+    const empFilters = { minEmployees: 1, maxEmployees: 2 };
+    const companies = await Company.filter(empFilters);
+
+    expect(companies).toEqual(
+      [
+        {
+          handle: "c1",
+          name: "C1",
+          description: "Desc1",
+          numEmployees: 1,
+          logoUrl: "http://c1.img",
+        },
+        {
+          handle: "c2",
+          name: "C2",
+          description: "Desc2",
+          numEmployees: 2,
+          logoUrl: "http://c2.img",
+        }
+      ]
+    );
+  });
 });
 
 /************************************** get */
@@ -172,7 +234,7 @@ describe("update", function () {
     });
 
     const result = await db.query(
-          `SELECT handle, name, description, num_employees, logo_url
+      `SELECT handle, name, description, num_employees, logo_url
            FROM companies
            WHERE handle = 'c1'`);
     expect(result.rows).toEqual([{
@@ -199,7 +261,7 @@ describe("update", function () {
     });
 
     const result = await db.query(
-          `SELECT handle, name, description, num_employees, logo_url
+      `SELECT handle, name, description, num_employees, logo_url
            FROM companies
            WHERE handle = 'c1'`);
     expect(result.rows).toEqual([{
@@ -236,7 +298,7 @@ describe("remove", function () {
   test("works", async function () {
     await Company.remove("c1");
     const res = await db.query(
-        "SELECT handle FROM companies WHERE handle='c1'");
+      "SELECT handle FROM companies WHERE handle='c1'");
     expect(res.rows.length).toEqual(0);
   });
 

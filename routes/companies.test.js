@@ -96,14 +96,22 @@ describe("GET /companies", function () {
     });
   });
 
-  //FILTERING TESTS
-  test("returns companies with query name", async function (){
-    await db.query()
-  });
+/** FILTERING TESTS: FOCUS ON VALIDATING DATA ****************/
+  // test("returns companies with query name", async function (){
+  //   const resp = await request(app).get(`"/companies?name="net"`);
+  //   expect()
+  // });
 
-
-
-  
+  ////TEST VALIDATION
+  // test("works: minEmployees > maxEmployees, throws err", async function () {
+  //   const empFilters = { minEmployees: 9001, maxEmployees: 75 };
+  //   try {
+  //     await Company.filter(empFilter);
+  //     fail();
+  //   } catch (err) {
+  //     expect(err instanceof BadRequestError).toBeTruthy();
+  //   }
+  // });
 
   test("fails: test next() handler", async function () {
     // there's no normal failure event which will cause this route to fail ---

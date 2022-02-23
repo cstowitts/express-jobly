@@ -66,18 +66,33 @@ class Company {
     return companiesRes.rows;
   }
 
-  /** Find all companies matching filter(s) 
-   * 
-   * Accepts an object of filter parameters: 
+  /** Find all companies matching filter(s) like:
+   *
+   * name: string
+   * minEmployees: int (>= 1, returns inclusive )
+   * maxEmployees: int (>= minEmployees, returns inclusive )
+   *
+   * Accepts an object of filter parameters:
    * {name, minEmployees, maxEmployees}
-   * if minEmployees > maxEmployees, throws 400 error with appropriate message ("maxEmployees must be greater than minEmployees");
-   * 
+   * !!move this logic to route!! if minEmployees > maxEmployees,
+   * throws 400 error with appropriate message
+   * ("maxEmployees must be greater than minEmployees");
+   *
    * Returns an array of company POJOs:
    * [{ handle, name, description, numEmployees, logoUrl }, ...]
+   *
+   * This function is always given sanitized input
+   * FROM the route, no validation inside
    */
 
+  static async filter({name, minEmployees, maxEmployees}){
+    //PERFORM MAGIC
 
-  
+    return companiesRes.rows;
+  }
+
+
+
   /** Given a company handle, return data about company.
    *
    * Returns { handle, name, description, numEmployees, logoUrl, jobs }
