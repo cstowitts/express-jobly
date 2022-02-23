@@ -47,6 +47,9 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
  */
 
 router.get("/", async function (req, res, next) {
+  //TODO add if statement to check for filter
+  //Probably need to ensure only certain query params are passed
+  //const {name, minEmployees, maxEmployees} = req.query
   const companies = await Company.findAll();
   return res.json({ companies });
 });
