@@ -1,3 +1,6 @@
+"use strict";
+
+const { BadRequestError } = require("../expressError");
 const { sqlForPartialUpdate } = require("./sql");
 
 describe("Testing sqlForPartialUpdate", function(){
@@ -11,16 +14,12 @@ describe("Testing sqlForPartialUpdate", function(){
     lastName: "last_name"
   }
 
-  /** Expect output to be:
-   * {
-   *  setCols: "name, description",
-   *  values: [ "Dawg Inc", "Moves and shakers of dogdom"]
-   * }
-   */
   const companyData = {
     name: "Dawg Inc",
-    description: "Moves and shakers of dogdom"
+    description: "Movers and shakers of dogdom"
   }
+
+  const emptyData = {};
 
   test("test company data", function(){
     const results = sqlForPartialUpdate(companyData, {});
@@ -28,7 +27,7 @@ describe("Testing sqlForPartialUpdate", function(){
     expect(results).toEqual(
       {
         setCols: "\"name\"=$1, \"description\"=$2",
-        values: [ "Dawg Inc", "Moves and shakers of dogdom"]
+        values: [ "Dawg Inc", "Movers and shakers of dogdom"]
       }
     );
   });
@@ -43,4 +42,18 @@ describe("Testing sqlForPartialUpdate", function(){
       }
     );
   });
+
+  test("tests empty obj arg for dataToUpdate", function(){
+    expect(() => sqlForPartialUpdate(emptyData, userJStoSQL))
+    .toThrow("No data");
+
+    //need to wrap in fn--
+    //otherwise error won't be caught, assertion will fail
+
+  });
+
+
+
+
+
 });
