@@ -88,9 +88,12 @@ describe("findAll", function () {
     let companies = await Company.findAll();
     expect(companies).toEqual(allCompanies);
   });
+});
 
-  /**FILTERING TESTS*************************************************/
 
+/**FILTERING TESTS*************************************************/
+
+describe("filter", function () {
   test("works: name filter ('C')", async function () {
     const nameFilter = { name: "C" };
     const companies = await Company.filter({ nameFilter });
@@ -190,6 +193,17 @@ describe("findAll", function () {
       ]
     );
   });
+
+  test("works: minEmployees > maxEmployees, throws err", async function () {
+    const empFilters = { minEmployees: 9001, maxEmployees: 75 };
+    try {
+      await Company.filter(empFilters);
+      fail();
+    } catch (err) {
+      expect(err instanceof BadRequestError).toBeTruthy();
+    }
+  });
+
 });
 
 /************************************** get */

@@ -102,16 +102,7 @@ describe("GET /companies", function () {
   //   expect()
   // });
 
-  ////TEST VALIDATION
-  // test("works: minEmployees > maxEmployees, throws err", async function () {
-  //   const empFilters = { minEmployees: 9001, maxEmployees: 75 };
-  //   try {
-  //     await Company.filter(empFilter);
-  //     fail();
-  //   } catch (err) {
-  //     expect(err instanceof BadRequestError).toBeTruthy();
-  //   }
-  // });
+ 
 
   test("fails: test next() handler", async function () {
     // there's no normal failure event which will cause this route to fail ---

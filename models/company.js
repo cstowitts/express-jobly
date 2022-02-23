@@ -74,7 +74,7 @@ class Company {
    *
    * Accepts an object of filter parameters:
    * {name, minEmployees, maxEmployees}
-   * !!move this logic to route!! if minEmployees > maxEmployees,
+   * if minEmployees > maxEmployees,
    * throws 400 error with appropriate message
    * ("maxEmployees must be greater than minEmployees");
    *
@@ -86,9 +86,17 @@ class Company {
    */
 
   static async filter({name, minEmployees, maxEmployees}){
-    //PERFORM MAGIC
+    if(minEmployees > maxEmployees){
+      throw new BadRequestError(
+        "maxEmployees must be greater than minEmployees"
+        );
+    };
 
-    return companiesRes.rows;
+
+    
+
+
+    // return companiesRes.rows;
   }
 
 

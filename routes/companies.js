@@ -42,6 +42,8 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
  * - minEmployees
  * - maxEmployees
  * - nameLike (will find case-insensitive, partial matches)
+ * 
+ * if no query strings, call findAll()
  *
  * Authorization required: none
  */
