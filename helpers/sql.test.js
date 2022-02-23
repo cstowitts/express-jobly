@@ -49,6 +49,11 @@ describe("Testing sqlForPartialUpdate", function(){
 
     //need to wrap in fn--
     //otherwise error won't be caught, assertion will fail
+    //could also have had a try/catch block (matches other test files)
+      //fail() in the try block to make sure the fn fails 
+        //if err isn't thrown (would be bug in code), 
+        //fail() runs only then
+    //inside catch: expect type of error was badReqErr
 
   });
 
