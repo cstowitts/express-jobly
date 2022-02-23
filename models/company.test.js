@@ -90,11 +90,44 @@ describe("findAll", function () {
   });
 
   //FILTERING TESTS*************************************************
-  test("works: name filter", async function(){
-    const nameFilter = "C";
-    let companies = await Company.filter(nameFilter);
+  test("works: name filter ('C')", async function(){
+    const nameFilter = {name: "C"};
+    const companies = await Company.filter({nameFilter});
     expect(companies).toEqual(allCompanies);
   });
+
+  test("works: name filter ('1')", async function(){
+    const nameFilter = {name: "1"};
+    const companies = await Company.filter(nameFilter);
+    expect(companies).toEqual(
+      [
+        {
+          handle: "c1",
+          name: "C1",
+          description: "Desc1",
+          numEmployees: 1,
+          logoUrl: "http://c1.img",
+        },
+      ]
+    )
+  });
+
+  test("works: name filter with no returning results", async function(){
+    const nameFilter = {name: "DOG"};
+    const companies = await Company.filter(nameFilter);
+    expect(companies).toEqual([]);
+  });
+
+  test("works: minEmployees > maxEmployees, throws err", async function(){
+    const empFilter = { minEmployees: 9001, maxEmployees: 75 };
+    try {
+      await Company.filter(empFilter);
+      fail();
+    } catch (err) {
+      expect(err instanceof BadRequestError).toBeTruthy();
+    }
+  });
+
 });
 
 /************************************** get */

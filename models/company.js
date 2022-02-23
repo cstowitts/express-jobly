@@ -66,6 +66,18 @@ class Company {
     return companiesRes.rows;
   }
 
+  /** Find all companies matching filter(s) 
+   * 
+   * Accepts an object of filter parameters: 
+   * {name, minEmployees, maxEmployees}
+   * if minEmployees > maxEmployees, throws 400 error with appropriate message ("maxEmployees must be greater than minEmployees");
+   * 
+   * Returns an array of company POJOs:
+   * [{ handle, name, description, numEmployees, logoUrl }, ...]
+   */
+
+
+  
   /** Given a company handle, return data about company.
    *
    * Returns { handle, name, description, numEmployees, logoUrl, jobs }
