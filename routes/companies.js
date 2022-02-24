@@ -51,19 +51,29 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
  */
 
 router.get("/", async function (req, res, next) {
-  //TODO add if statement to check for filter
-  //Probably need to ensure only certain query params are passed
-  //const {name, minEmployees, maxEmployees} = req.query
-  // console.log("req.query", req.query);
-  // if(req.query){
-  //   const validator = jsonschema.validate(req.query, companyFilterSchema);
-  //   if (!validator.valid) {
-  //     const errs = validator.errors.map(e => e.stack);
-  //     throw new BadRequestError(errs);
-  //   }
-  //   const companies = await Company.filter(req.query);
-  //   return res.json({ companies });
-  // }
+
+  //req.query is basically immutable, a getter to reflect req.url
+  //so to convert our query strs to ints, we have to make our own obj
+  const convertedQuery = req.query;
+  
+  //is minEmp in convertedQuery? is it there or not, be more explicit
+  //so we aren't relying on accidental truthiness
+  if(convertedQuery.minEmployees !== undefined){
+    convertedQuery.minEmployees = Number(req.query.minEmployees);
+  }
+  if(convertedQuery.maxEmployees !== undefined){
+    convertedQuery.maxEmployees = Number(req.query.maxEmployees);
+  }
+
+  if(Object.keys(convertedQuery).length > 0){
+    const validator = jsonschema.validate(convertedQuery, companyFilterSchema);
+    if (!validator.valid) {
+      const errs = validator.errors.map(e => e.stack);
+      throw new BadRequestError(errs);
+    }
+    const companies = await Company.filter(convertedQuery);
+    return res.json({ companies });
+  }
 
   const companies = await Company.findAll();
   return res.json({ companies });

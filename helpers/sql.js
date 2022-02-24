@@ -1,18 +1,20 @@
 const { BadRequestError } = require("../expressError");
 
-/** takes in object of {data, data ...}
+/** takes in object of data to update {data, data ...}
  * and object of {dataJSNAME : dataSQLname ...}
  *
  * data needs to represent cols in db (IE user cols, company cols)
- * column key names are transformed into valid sql col names IE:
- * firstName col becomes first_name col.
+ * column key names => valid sql col names IE:
+ * firstName => first_name
  * the value of the column is then set to a SQL variable like ${integer}
  *
- * function returns object like:
+ * function returns object:
  * {setCols: columns, values: values}
  *
  * function only validates that the dataToUpdate obj is NOT empty
  */
+
+//TODO: grab test and put into docstring to illustrate what this fn does
 
 function sqlForPartialUpdate(dataToUpdate, jsToSql) {
   const keys = Object.keys(dataToUpdate);

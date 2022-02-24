@@ -96,20 +96,14 @@ describe("GET /companies", function () {
     });
   });
 
-  console.log("After get all")
-  /** FILTERING TESTS: FOCUS ON VALIDATING DATA ****************/
 
-  const queryString = `?name="c"&&minEmployees="1"&&maxEmployees="2"`;
+  /********************************** FILTERING TESTS /companies */
 
-  console.log("QueryString: ",queryString);
+  const queryString = `?name=c&&minEmployees=1&&maxEmployees=2`;
 
   test("works: valid query passed, which filter company request",
     async function () {
-  console.log("Before request")
-
       const resp = await request(app).get(`/companies${queryString}`);
-  console.log("after request")
-
 
       expect(resp.statusCode).toEqual(200);
       expect(resp.body).toEqual({

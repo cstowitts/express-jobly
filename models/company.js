@@ -69,7 +69,7 @@ class Company {
   /** Find all companies matching filter(s) like:
    *
    * name: string
-   * minEmployees: int (>= 1, returns inclusive )
+   * minEmployees: int (>= 0, returns inclusive )
    * maxEmployees: int (>= minEmployees, returns inclusive )
    *
    * Accepts an object of filter parameters:
@@ -81,10 +81,10 @@ class Company {
    * Returns an array of company POJOs:
    * [{ handle, name, description, numEmployees, logoUrl }, ...]
    *
-   * This function is always given sanitized input
-   * FROM the route, no validation inside
+   * This function is always given sanitized input FROM the route
+   * only validates that minEmp < maxEmp, will throw BadRequestError
    */
-
+ 
   static async filter({ nameLike, minEmployees, maxEmployees }) {
     if (minEmployees > maxEmployees) {
       throw new BadRequestError(
@@ -100,11 +100,13 @@ class Company {
       vals.push(`%${nameLike}%`);
       filters.push(`"name" ILIKE $${vals.length}`);
     }
-    if (minEmployees) {
+    //don't rely on accidental truthiness, we mean if it's NOT undefined 
+    //minEmp/maxEmp can be 0, valid input
+    if (minEmployees !== undefined) {
       vals.push(`${minEmployees}`);
       filters.push(`"num_employees" >= $${vals.length}`);
     }
-    if (maxEmployees) {
+    if (maxEmployees !== undefined) {
       vals.push(`${maxEmployees}`);
       filters.push(`"num_employees" <= $${vals.length}`);
     }
@@ -136,6 +138,11 @@ class Company {
 
     const companiesRes = await db.query(queryString, vals);
     return companiesRes.rows;
+
+    //could have split the fn into a helper that constructs the WHERE clause
+    //and a method (.filter) that uses the helper
+    //would have been easier to test
+    //test the lower fn, then other tests to test the higher fn
   }
 
 
