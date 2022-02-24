@@ -231,6 +231,22 @@ describe("filter", function () {
     }
   });
 
+  test("works: all 3 filters--name, minEmployees, maxEmployees", async function () {
+    const allFilters = { name: "C", minEmployees: 3, maxEmployees: 3 };
+    const companies = await Company.filter(allFilters);
+    console.log("in test, line 237--companies: ", companies);
+
+    expect(companies).toEqual([
+      {
+        handle: "c3",
+        name: "C3",
+        description: "Desc3",
+        numEmployees: 3,
+        logoUrl: "http://c3.img",
+      }
+    ]);
+  });
+
 });
 
 /************************************** get */

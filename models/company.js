@@ -92,12 +92,7 @@ class Company {
       );
     };
 
-    /** NAIVE SOLUTION
-     * if name => this
-     * and if max =>
-     * and if min =>
-     */
-
+    //naive solution
     let filters = [];
     if(name){
       filters.push(`"name" ILIKE '%${name}%'`);
@@ -135,6 +130,7 @@ class Company {
           WHERE ${filterStr}
           ORDER BY name`
     );
+
 
     return companiesRes.rows;
   }
