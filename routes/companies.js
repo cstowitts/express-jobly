@@ -11,6 +11,7 @@ const Company = require("../models/company");
 
 const companyNewSchema = require("../schemas/companyNew.json");
 const companyUpdateSchema = require("../schemas/companyUpdate.json");
+const e = require("express");
 
 const router = new express.Router();
 
@@ -42,7 +43,7 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
  * - minEmployees
  * - maxEmployees
  * - nameLike (will find case-insensitive, partial matches)
- * 
+ *
  * if no query strings, call findAll()
  *
  * Authorization required: none
@@ -52,9 +53,16 @@ router.get("/", async function (req, res, next) {
   //TODO add if statement to check for filter
   //Probably need to ensure only certain query params are passed
   //const {name, minEmployees, maxEmployees} = req.query
- 
+
+  // if(req.query){
+  //   //FILTER SHIT
+  // }
+  // else{
+  // }
+
   const companies = await Company.findAll();
   return res.json({ companies });
+
 });
 
 /** GET /[handle]  =>  { company }
