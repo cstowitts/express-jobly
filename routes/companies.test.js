@@ -97,10 +97,7 @@ describe("GET /companies", function () {
   });
 
 /** FILTERING TESTS: FOCUS ON VALIDATING DATA ****************/
-  // test("returns companies with query name", async function (){
-  //   const resp = await request(app).get(`"/companies?name="net"`);
-  //   expect()
-  // });
+  
 
  
 

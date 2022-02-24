@@ -121,15 +121,15 @@ describe("filter", function () {
     ];
 
 
-  test("works: name filter ('C')", async function () {
-    const nameFilter = { name: "C" };
-    const companies = await Company.filter(nameFilter);
+  test("works: nameLike filter ('C')", async function () {
+    const nameLikeFilter = { nameLike: "C" };
+    const companies = await Company.filter(nameLikeFilter);
     expect(companies).toEqual(allCompanies);
   });
 
-  test("works: name filter ('1')", async function () {
-    const nameFilter = { name: "1" };
-    const companies = await Company.filter(nameFilter);
+  test("works: nameLike filter ('1')", async function () {
+    const nameLikeFilter = { nameLike: "1" };
+    const companies = await Company.filter(nameLikeFilter);
     expect(companies).toEqual(
       [
         {
@@ -144,8 +144,8 @@ describe("filter", function () {
   });
 
   test("works: name filter with no returning results", async function () {
-    const nameFilter = { name: "DOG" };
-    const companies = await Company.filter(nameFilter);
+    const nameLikeFilter = { nameLike: "DOG" };
+    const companies = await Company.filter(nameLikeFilter);
     expect(companies).toEqual([]);
   });
 
@@ -231,8 +231,8 @@ describe("filter", function () {
     }
   });
 
-  test("works: all 3 filters--name, minEmployees, maxEmployees", async function () {
-    const allFilters = { name: "C", minEmployees: 3, maxEmployees: 3 };
+  test("works: all 3 filters--nameLike, minEmployees, maxEmployees", async function () {
+    const allFilters = { nameLike: "C", minEmployees: 3, maxEmployees: 3 };
     const companies = await Company.filter(allFilters);
     console.log("in test, line 237--companies: ", companies);
 

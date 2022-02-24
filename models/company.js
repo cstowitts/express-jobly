@@ -85,17 +85,18 @@ class Company {
    * FROM the route, no validation inside
    */
 
-  static async filter({name, minEmployees, maxEmployees}) {
+  static async filter({nameLike, minEmployees, maxEmployees}) {
     if (minEmployees > maxEmployees) {
       throw new BadRequestError(
         "maxEmployees must be greater than minEmployees"
       );
     };
 
-    //naive solution
+    //creates SQL query string based on args, won't scale with additional filters
+    //could also be put into a helper fn and called here!
     let filters = [];
-    if(name){
-      filters.push(`"name" ILIKE '%${name}%'`);
+    if(nameLike){
+      filters.push(`"name" ILIKE '%${nameLike}%'`);
     }
     if(minEmployees){
       filters.push(`"num_employees" >= ${minEmployees}`);
@@ -112,7 +113,7 @@ class Company {
     const filterStr = filters.map((colName, idx) =>
       `"${colName} = $${idx + 1}`
       //CASE NAME:
-      //"name" ILIKE '%$1%'
+      //"nameLike" ILIKE '%$1%'
       //CASE MIN:
       //"num_employees" >= $2
       //CASE MAX:
