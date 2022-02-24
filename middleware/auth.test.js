@@ -5,6 +5,7 @@ const { UnauthorizedError } = require("../expressError");
 const {
   authenticateJWT,
   ensureLoggedIn,
+  ensureAdmin,
 } = require("./auth");
 
 
@@ -12,6 +13,8 @@ const { SECRET_KEY } = require("../config");
 const testJwt = jwt.sign({ username: "test", isAdmin: false }, SECRET_KEY);
 const badJwt = jwt.sign({ username: "test", isAdmin: false }, "wrong");
 
+const adminUser = { username: "admin", isAdmin: true};
+const notAdminUser = { username: "notAdmin", isAdmin: false};
 
 describe("authenticateJWT", function () {
   test("works: via header", function () {
@@ -76,3 +79,23 @@ describe("ensureLoggedIn", function () {
     ensureLoggedIn(req, res, next);
   });
 });
+
+describe("ensureAdmin", function(){
+  test("fails: not isAdmin", function(){
+    expect.assertions(1);
+
+    const req = {};
+    const res = { locals: { user: notAdminUser } };
+    const next = function (err) {
+      expect(err).toBeFalsy();
+      expect(err instanceof UnauthorizedError).toBeTruthy();
+    }
+
+    ensureAdmin(req, res, next);
+
+  });
+
+  test("works: isAdmin", function(){
+
+  });
+})
