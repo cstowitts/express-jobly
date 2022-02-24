@@ -11,7 +11,7 @@ const { BadRequestError } = require("../expressError");
  * function returns object like:
  * {setCols: columns, values: values}
  *
- * function only validates that the dataToUpdate obj is NOT empty 
+ * function only validates that the dataToUpdate obj is NOT empty
  */
 
 function sqlForPartialUpdate(dataToUpdate, jsToSql) {

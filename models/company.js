@@ -18,16 +18,16 @@ class Company {
 
   static async create({ handle, name, description, numEmployees, logoUrl }) {
     const duplicateCheck = await db.query(
-        `SELECT handle
+      `SELECT handle
            FROM companies
            WHERE handle = $1`,
-        [handle]);
+      [handle]);
 
     if (duplicateCheck.rows[0])
       throw new BadRequestError(`Duplicate company: ${handle}`);
 
     const result = await db.query(
-        `INSERT INTO companies(
+      `INSERT INTO companies(
           handle,
           name,
           description,
@@ -36,13 +36,13 @@ class Company {
            VALUES
              ($1, $2, $3, $4, $5)
            RETURNING handle, name, description, num_employees AS "numEmployees", logo_url AS "logoUrl"`,
-        [
-          handle,
-          name,
-          description,
-          numEmployees,
-          logoUrl,
-        ],
+      [
+        handle,
+        name,
+        description,
+        numEmployees,
+        logoUrl,
+      ],
     );
     const company = result.rows[0];
 
@@ -56,7 +56,7 @@ class Company {
 
   static async findAll() {
     const companiesRes = await db.query(
-        `SELECT handle,
+      `SELECT handle,
                 name,
                 description,
                 num_employees AS "numEmployees",
@@ -85,18 +85,58 @@ class Company {
    * FROM the route, no validation inside
    */
 
-  static async filter({name, minEmployees, maxEmployees}){
-    if(minEmployees > maxEmployees){
+  static async filter({name, minEmployees, maxEmployees}) {
+    if (minEmployees > maxEmployees) {
       throw new BadRequestError(
         "maxEmployees must be greater than minEmployees"
-        );
+      );
     };
 
+    /** NAIVE SOLUTION
+     * if name => this
+     * and if max =>
+     * and if min =>
+     */
 
-    
+    let filters = [];
+    if(name){
+      filters.push(`"name" ILIKE '%${name}%'`);
+    }
+    if(minEmployees){
+      filters.push(`"num_employees" >= ${minEmployees}`);
+    }
+    if(maxEmployees){
+      filters.push(`"num_employees" <= ${maxEmployees}`);
+    }
 
+    const filterStr = filters.join(" AND ");
 
-    // return companiesRes.rows;
+    /** Potential refactor??******
+    //const filters = Object.keys(filterData);
+     *
+    const filterStr = filters.map((colName, idx) =>
+      `"${colName} = $${idx + 1}`
+      //CASE NAME:
+      //"name" ILIKE '%$1%'
+      //CASE MIN:
+      //"num_employees" >= $2
+      //CASE MAX:
+      //"num_employees" <= $3
+    );
+    */
+
+    const companiesRes = await db.query(
+      `SELECT handle,
+              name,
+              description,
+              num_employees AS "numEmployees",
+              logo_url AS "logoUrl"
+          FROM companies
+          WHERE ${filterStr}
+          ORDER BY name`
+    );
+
+    return companiesRes.rows;
   }
 
 
@@ -111,14 +151,14 @@ class Company {
 
   static async get(handle) {
     const companyRes = await db.query(
-        `SELECT handle,
+      `SELECT handle,
                 name,
                 description,
                 num_employees AS "numEmployees",
                 logo_url AS "logoUrl"
            FROM companies
            WHERE handle = $1`,
-        [handle]);
+      [handle]);
 
     const company = companyRes.rows[0];
 
@@ -141,11 +181,11 @@ class Company {
 
   static async update(handle, data) {
     const { setCols, values } = sqlForPartialUpdate(
-        data,
-        {
-          numEmployees: "num_employees",
-          logoUrl: "logo_url",
-        });
+      data,
+      {
+        numEmployees: "num_employees",
+        logoUrl: "logo_url",
+      });
     const handleVarIdx = "$" + (values.length + 1);
 
     const querySql = `
@@ -168,11 +208,11 @@ class Company {
 
   static async remove(handle) {
     const result = await db.query(
-        `DELETE
+      `DELETE
            FROM companies
            WHERE handle = $1
            RETURNING handle`,
-        [handle]);
+      [handle]);
     const company = result.rows[0];
 
     if (!company) throw new NotFoundError(`No company: ${handle}`);

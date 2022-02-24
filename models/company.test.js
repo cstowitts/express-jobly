@@ -94,9 +94,36 @@ describe("findAll", function () {
 /**FILTERING TESTS*************************************************/
 
 describe("filter", function () {
+
+  const allCompanies =
+    [
+      {
+        handle: "c1",
+        name: "C1",
+        description: "Desc1",
+        numEmployees: 1,
+        logoUrl: "http://c1.img",
+      },
+      {
+        handle: "c2",
+        name: "C2",
+        description: "Desc2",
+        numEmployees: 2,
+        logoUrl: "http://c2.img",
+      },
+      {
+        handle: "c3",
+        name: "C3",
+        description: "Desc3",
+        numEmployees: 3,
+        logoUrl: "http://c3.img",
+      },
+    ];
+
+
   test("works: name filter ('C')", async function () {
     const nameFilter = { name: "C" };
-    const companies = await Company.filter({ nameFilter });
+    const companies = await Company.filter(nameFilter);
     expect(companies).toEqual(allCompanies);
   });
 
@@ -122,7 +149,7 @@ describe("filter", function () {
     expect(companies).toEqual([]);
   });
 
-  test("works: minEmployees only", async function(){
+  test("works: minEmployees only", async function () {
     const empFilter = { minEmployees: 2 };
     const companies = await Company.filter(empFilter);
 
@@ -146,7 +173,7 @@ describe("filter", function () {
     )
   });
 
-  test("works: maxEmployees only", async function(){
+  test("works: maxEmployees only", async function () {
     const empFilter = { maxEmployees: 2 };
     const companies = await Company.filter(empFilter);
 
