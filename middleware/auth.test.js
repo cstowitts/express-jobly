@@ -81,21 +81,30 @@ describe("ensureLoggedIn", function () {
 });
 
 describe("ensureAdmin", function(){
-  test("fails: not isAdmin", function(){
+  test("works: isAdmin", function(){
     expect.assertions(1);
+    
+    const req = {};
+    const res = { locals: { user: adminUser } };
+    const next = function (err) {
+      expect(err).toBeFalsy();
+    }
+
+    ensureAdmin(req, res, next);
+  });
+
+  test("fails: notAdminUser, unauth", function(){
+    expect.assertions(2);
 
     const req = {};
     const res = { locals: { user: notAdminUser } };
     const next = function (err) {
-      expect(err).toBeFalsy();
+      expect(err).toBeTruthy();
       expect(err instanceof UnauthorizedError).toBeTruthy();
     }
-
+    
     ensureAdmin(req, res, next);
 
   });
 
-  test("works: isAdmin", function(){
-
-  });
 })
