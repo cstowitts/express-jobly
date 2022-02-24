@@ -85,7 +85,7 @@ class Company {
    * FROM the route, no validation inside
    */
 
-  static async filter({nameLike, minEmployees, maxEmployees}) {
+  static async filter({ nameLike, minEmployees, maxEmployees }) {
     if (minEmployees > maxEmployees) {
       throw new BadRequestError(
         "maxEmployees must be greater than minEmployees"
@@ -95,14 +95,18 @@ class Company {
     //creates SQL query string based on args, won't scale with additional filters
     //could also be put into a helper fn and called here!
     let filters = [];
-    if(nameLike){
-      filters.push(`"name" ILIKE '%${nameLike}%'`);
+    let vals = [];
+    if (nameLike) {
+      vals.push(`%${nameLike}%`);
+      filters.push(`"name" ILIKE $${vals.length}`);
     }
-    if(minEmployees){
-      filters.push(`"num_employees" >= ${minEmployees}`);
+    if (minEmployees) {
+      vals.push(`${minEmployees}`);
+      filters.push(`"num_employees" >= $${vals.length}`);
     }
-    if(maxEmployees){
-      filters.push(`"num_employees" <= ${maxEmployees}`);
+    if (maxEmployees) {
+      vals.push(`${maxEmployees}`);
+      filters.push(`"num_employees" <= $${vals.length}`);
     }
 
     const filterStr = filters.join(" AND ");
@@ -121,18 +125,16 @@ class Company {
     );
     */
 
-    const companiesRes = await db.query(
-      `SELECT handle,
-              name,
-              description,
-              num_employees AS "numEmployees",
-              logo_url AS "logoUrl"
-          FROM companies
-          WHERE ${filterStr}
-          ORDER BY name`
-    );
+    const queryString = `SELECT handle,
+                    name,
+                    description,
+                    num_employees AS "numEmployees",
+                    logo_url AS "logoUrl"
+                  FROM companies
+                  WHERE ${filterStr}
+                  ORDER BY name`;
 
-
+    const companiesRes = await db.query(queryString, vals);
     return companiesRes.rows;
   }
 

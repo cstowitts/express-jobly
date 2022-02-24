@@ -1,0 +1,9 @@
+Notes:
+
+WED 2/23
+sqlpartiallyupdate will conver js variable names into snake_case sql names,
+the update  company method creates a sql statement THEN calls db.query
+eventually, middleware for isAdmin will need to be checked, this data ALREADY exists in the token
+
+TODO:
+check partialSQL docstring for types in parameters

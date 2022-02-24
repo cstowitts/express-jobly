@@ -11,6 +11,7 @@ const Company = require("../models/company");
 
 const companyNewSchema = require("../schemas/companyNew.json");
 const companyUpdateSchema = require("../schemas/companyUpdate.json");
+const companyFilterSchema = require("../schemas/companyFilter.json");
 const e = require("express");
 
 const router = new express.Router();
@@ -53,16 +54,19 @@ router.get("/", async function (req, res, next) {
   //TODO add if statement to check for filter
   //Probably need to ensure only certain query params are passed
   //const {name, minEmployees, maxEmployees} = req.query
-
+  // console.log("req.query", req.query);
   // if(req.query){
-  //   //FILTER SHIT
-  // }
-  // else{
+  //   const validator = jsonschema.validate(req.query, companyFilterSchema);
+  //   if (!validator.valid) {
+  //     const errs = validator.errors.map(e => e.stack);
+  //     throw new BadRequestError(errs);
+  //   }
+  //   const companies = await Company.filter(req.query);
+  //   return res.json({ companies });
   // }
 
   const companies = await Company.findAll();
   return res.json({ companies });
-
 });
 
 /** GET /[handle]  =>  { company }
