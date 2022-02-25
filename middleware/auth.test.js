@@ -6,6 +6,7 @@ const {
   authenticateJWT,
   ensureLoggedIn,
   ensureAdmin,
+  ensureCorrectUser,
 } = require("./auth");
 
 
@@ -13,6 +14,7 @@ const { SECRET_KEY } = require("../config");
 const testJwt = jwt.sign({ username: "test", isAdmin: false }, SECRET_KEY);
 const badJwt = jwt.sign({ username: "test", isAdmin: false }, "wrong");
 
+const sameUser = {username: "same", isAdmin: false};
 const adminUser = { username: "admin", isAdmin: true};
 const notAdminUser = { username: "notAdmin", isAdmin: false};
 
@@ -83,7 +85,7 @@ describe("ensureLoggedIn", function () {
 describe("ensureAdmin", function(){
   test("works: isAdmin", function(){
     expect.assertions(1);
-    
+
     const req = {};
     const res = { locals: { user: adminUser } };
     const next = function (err) {
@@ -102,9 +104,49 @@ describe("ensureAdmin", function(){
       expect(err).toBeTruthy();
       expect(err instanceof UnauthorizedError).toBeTruthy();
     }
-    
+
     ensureAdmin(req, res, next);
 
   });
 
+});
+
+describe("ensureCorrectUser", function(){
+  test("works: isAdmin", function(){
+    expect.assertions(1);
+
+    const req = { params: { username: adminUser.username}};
+    const res = { locals: { user: adminUser } };
+    const next = function (err) {
+      expect(err).toBeFalsy();
+    }
+
+    ensureCorrectUser(req, res, next);
+
+  });
+
+  test("works: same user", function(){
+    expect.assertions(1);
+
+    const req = { params: { username: sameUser.username}};
+    const res = { locals: { user: sameUser } };
+    const next = function (err) {
+      expect(err).toBeFalsy();
+    }
+
+    ensureCorrectUser(req, res, next);
+  });
+
+  test("fails: not admin or same user", function(){
+    expect.assertions(2);
+
+    const req = { params: { username: notAdminUser.username}};
+    const res = { locals: { user: notAdminUser } };
+    const next = function (err) {
+      expect(err).toBeTruthy();
+      expect(err instanceof UnauthorizedError).toBeTruthy();
+    }
+
+    ensureCorrectUser(req, res, next);
+  });
 })
