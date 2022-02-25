@@ -11,4 +11,17 @@ const db = new Client({
 
 db.connect();
 
+//getNumericType();
+
+
+/**this is for testing what PG returns when querying a NUMERIC sql type */
+async function getNumericType(){
+  const results = await db.query(
+    `SELECT * FROM jobs`
+  );
+
+  console.log("results: ", results.rows[0]);
+  console.log("equity type: ", typeof(results.rows[0].equity));
+}
+
 module.exports = db;

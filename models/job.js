@@ -8,11 +8,11 @@ const { sqlForPartialUpdate } = require("../helpers/sql");
 
 class Jobs {
     /** Create a job (from data), update db, return new job data
-     * 
+     *
      * data should be { title, salary, equity, company_handle }
-     * 
+     *
      * Returns { title, salary, equity, company_handle }
-     * 
+     *
      * Throws BadRequestError if company already in database.
      * */
 
@@ -35,10 +35,10 @@ class Jobs {
                 company_handle)
             VALUES
                 ($1, $2, $3, $4)
-            RETURNING 
-                title, 
-                salary, 
-                equity, 
+            RETURNING
+                title,
+                salary,
+                equity,
                 company_handle AS "companyHandle",
             )`,
             [
@@ -55,40 +55,41 @@ class Jobs {
     }
 
     /** Finds all jobs
-     * 
+     *
      * Returns [{ title, salary, equity, companyHandle }, ...]
      * */
 
     static async findAll() {
         const jobRes = await db.query(
-            `SELECT title,
+            `SELECT id,
+                    title,
                     salary,
                     equity,
                     company_handle AS "companyHandle",
             FROM jobs
-            ORDER BY title`);
+            ORDER BY title, companyHandle`);
 
         return jobRes.rows;
     }
 
-    /** Find all jobs matching filter(s) like:
-   *
-   * title: string
-   * minSalary: int (>= 0, returns inclusive )
-   * hasEquity: int (<= 1.0, returns inclusive )
-   *
-   * Accepts an object of filter parameters:
-   * {name, minSalary, hasEquity}
-   * 
-   * if hasEquity: false, or not included in filtering, 
-   * lists all jobs regardless of equity
-   *
-   * Returns an array of job POJOs:
-   * [{ title, salary, equity, company_handle }, ...]
-   *
-   * This function is always given sanitized input FROM the route
-   * does not validate anything 
-   */
+     /** Find all jobs matching filter(s) like:
+     *
+     * title: string
+     * minSalary: int (>= 0, returns inclusive )
+     * hasEquity: int (<= 1.0, returns inclusive )
+     *
+     * Accepts an object of filter parameters:
+     * {name, minSalary, hasEquity}
+     *
+     * if hasEquity: false, or not included in filtering,
+     * lists all jobs regardless of equity
+     *
+     * Returns an array of job POJOs:
+     * [{ title, salary, equity, company_handle }, ...]
+     *
+     * This function is always given sanitized input FROM the route
+     * does not validate anything
+     */
 
     static async filter({ title, minSalary, hasEquity }) {
 
@@ -97,7 +98,7 @@ class Jobs {
         let filters = [];
         let vals = [];
 
-        //don't rely on accidental truthiness, we mean if it's NOT undefined 
+        //don't rely on accidental truthiness, we mean if it's NOT undefined
         if (title !== undefined) {
             vals.push(`%${title}%`);
             filters.push(`"name" ILIKE $${vals.length}`);
@@ -132,7 +133,7 @@ class Jobs {
                     salary,
                     equity,
                     company_handle AS "companyHandle"
-                  FROM job
+                  FROM jobs
                   WHERE ${filterStr}
                   ORDER BY name`;
 
@@ -144,6 +145,62 @@ class Jobs {
         //would have been easier to test
         //test the lower fn, then other tests to test the higher fn
     }
+
+    /** Given a job title, return data about company.
+     *
+     * Returns { title, salary, equity, companyHandle]
+     *
+     * Throws NotFoundError if not found.
+     **/
+
+    static async get(id) {
+        const jobRes = await db.query(
+        `SELECT title,
+            salary,
+            equity,
+            company_handle AS "companyHandle"
+        FROM jobs
+        WHERE id = $1`,
+        [id]);
+
+        const job = jobRes.rows[0];
+
+        if (!job) throw new NotFoundError(`No job matching id of: ${id}`);
+
+        return job;
+    }
+
+    /** Update job data with `data`.
+   *
+   * This is a "partial update" --- it's fine if data doesn't contain all the
+   * fields; this only changes provided ones.
+   *
+   * Data can include: {title, salary, equity}
+   *
+   * Returns {id, title, salary, equity, companyHandle}
+   *
+   * Throws NotFoundError if not found.
+   */
+
+  static async update(id, data) {
+    const { setCols, values } = sqlForPartialUpdate(
+      data,
+      {});
+    const idVarIdx = "$" + (values.length + 1);
+
+    const querySql = `
+      UPDATE jobs
+      SET ${setCols}
+        WHERE id = ${idVarIdx}
+        RETURNING id, title, salary, equity, companyHandle`
+    const result = await db.query(querySql, [...values, id]);
+    const job = result.rows[0];
+
+    if (!job) throw new NotFoundError(`No job matching id of: ${id}`);
+
+    return job;
+  }
+
 
 
 
