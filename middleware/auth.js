@@ -48,13 +48,18 @@ function ensureLoggedIn(req, res, next) {
  */
 
 function ensureAdmin(req, res, next) {
-  const user = res.locals.user;
   try {
-    if (!user || user.isAdmin === false) {
+
+    if(!user){
       throw new UnauthorizedError();
-    } else {
+    }
+
+    const user = res.locals.user;
+
+    if (user && user.isAdmin === true) {
       return next();
     }
+      throw new UnauthorizedError();
   } catch (err) {
     return next(err);
   }
@@ -66,13 +71,15 @@ function ensureAdmin(req, res, next) {
  * if neither admin, or same, raises Unauthorized
  */
 
+//update function name adminOrSameUser
+//update to check if res.locals.user before accessing it
 function ensureCorrectUser(req, res, next) {
   const user = res.locals.user;
 
   const loggedInSameUser = user && (user.username === req.params.username);
 
   const loggedInAdmin = user && (user.isAdmin === true);
- 
+
   try {
     if (loggedInSameUser === true || loggedInAdmin == true){
       return next();
