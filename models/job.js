@@ -72,24 +72,24 @@ class Jobs {
         return jobRes.rows;
     }
 
-     /** Find all jobs matching filter(s) like:
-     *
-     * title: string
-     * minSalary: int (>= 0, returns inclusive )
-     * hasEquity: int (<= 1.0, returns inclusive )
-     *
-     * Accepts an object of filter parameters:
-     * {name, minSalary, hasEquity}
-     *
-     * if hasEquity: false, or not included in filtering,
-     * lists all jobs regardless of equity
-     *
-     * Returns an array of job POJOs:
-     * [{ title, salary, equity, company_handle }, ...]
-     *
-     * This function is always given sanitized input FROM the route
-     * does not validate anything
-     */
+    /** Find all jobs matching filter(s) like:
+    *
+    * title: string
+    * minSalary: int (>= 0, returns inclusive )
+    * hasEquity: int (<= 1.0, returns inclusive )
+    *
+    * Accepts an object of filter parameters:
+    * {name, minSalary, hasEquity}
+    *
+    * if hasEquity: false, or not included in filtering,
+    * lists all jobs regardless of equity
+    *
+    * Returns an array of job POJOs:
+    * [{ title, salary, equity, company_handle }, ...]
+    *
+    * This function is always given sanitized input FROM the route
+    * does not validate anything
+    */
 
     static async filter({ title, minSalary, hasEquity }) {
 
@@ -155,13 +155,13 @@ class Jobs {
 
     static async get(id) {
         const jobRes = await db.query(
-        `SELECT title,
+            `SELECT title,
             salary,
             equity,
             company_handle AS "companyHandle"
         FROM jobs
         WHERE id = $1`,
-        [id]);
+            [id]);
 
         const job = jobRes.rows[0];
 
@@ -182,32 +182,43 @@ class Jobs {
    * Throws NotFoundError if not found.
    */
 
-  static async update(id, data) {
-    const { setCols, values } = sqlForPartialUpdate(
-      data,
-      {});
-    const idVarIdx = "$" + (values.length + 1);
+    static async update(id, data) {
+        const { setCols, values } = sqlForPartialUpdate(
+            data,
+            {});
+        const idVarIdx = "$" + (values.length + 1);
 
-    const querySql = `
+        const querySql = `
       UPDATE jobs
       SET ${setCols}
         WHERE id = ${idVarIdx}
         RETURNING id, title, salary, equity, companyHandle`
-    const result = await db.query(querySql, [...values, id]);
-    const job = result.rows[0];
+        const result = await db.query(querySql, [...values, id]);
+        const job = result.rows[0];
 
-    if (!job) throw new NotFoundError(`No job matching id of: ${id}`);
+        if (!job) throw new NotFoundError(`No job matching id of: ${id}`);
 
-    return job;
-  }
+        return job;
+    }
 
+    /** Delete given job from database; returns undefined
+     * 
+     * Throws NotFoundError if company not found
+     * */
 
+    static async remove(id) {
+        const result = await db.query(
+            `DELETE
+                FROM jobs
+                WHERE id = $1
+                RETURNING title`, 
+            [id]);
+        const job = result.rows[0];
 
-
-
-
-
-
+        if(!job) throw new NotFoundError(`No job matching id: ${id}`);
+    }
 
 
 }
+
+module.exports = Job;
