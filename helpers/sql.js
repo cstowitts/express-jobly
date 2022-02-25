@@ -2,6 +2,7 @@ const { BadRequestError } = require("../expressError");
 
 /** takes in object of data to update {data, data ...}
  * and object of {dataJSNAME : dataSQLname ...}
+ * 
  *
  * data needs to represent cols in db (IE user cols, company cols)
  * column key names => valid sql col names IE:
@@ -10,7 +11,9 @@ const { BadRequestError } = require("../expressError");
  *
  * function returns object:
  * {setCols: columns, values: values}
- *
+ * ex: { setCols: "col1_name", "col2_name",.. 
+ *       values: [val1, val2,...] }
+ * 
  * function only validates that the dataToUpdate obj is NOT empty
  */
 

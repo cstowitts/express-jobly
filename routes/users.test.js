@@ -202,7 +202,13 @@ describe("GET /users/:username", function () {
     expect(resp.statusCode).toEqual(401);
   });
 
-  //Add test for not same or admid user
+
+  test("if not same user or admin user", async function () {
+    const resp = await request(app)
+        .get(`/users/u8`)
+        .set("authorization", `Bearer ${u1Token}`);
+    expect(resp.statusCode).toEqual(401);
+  });
 
   test("not found if user not found, as admin", async function () {
     const resp = await request(app)
@@ -257,6 +263,16 @@ describe("PATCH /users/:username", () => {
         .send({
           firstName: "New",
         });
+    expect(resp.statusCode).toEqual(401);
+  });
+
+  test("unauth for not same user or admin", async function () {
+    const resp = await request(app)
+        .patch(`/users/u8`)
+        .send({
+          firstName: "New",
+        })
+        .set("authorization", `Bearer ${u1Token}`);
     expect(resp.statusCode).toEqual(401);
   });
 
@@ -354,7 +370,12 @@ describe("DELETE /users/:username", function () {
     expect(resp.statusCode).toEqual(401);
   });
 
-  //TODO: Test does not work for not same user
+  test("unauth for not same user or admin", async function () {
+    const resp = await request(app)
+        .delete(`/users/u8`)
+        .set("authorization", `Bearer ${u1Token}`);
+    expect(resp.statusCode).toEqual(401);
+  });
 
   test("not found if user missing, as admin", async function () {
     const resp = await request(app)

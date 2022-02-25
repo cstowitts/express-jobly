@@ -95,6 +95,16 @@ describe("ensureAdmin", function(){
     ensureAdmin(req, res, next);
   });
 
+  test("unauth if no login", function () {
+    expect.assertions(1);
+    const req = {};
+    const res = { locals: {} };
+    const next = function (err) {
+      expect(err instanceof UnauthorizedError).toBeTruthy();
+    };
+    ensureAdmin(req, res, next);
+  });
+
   test("fails: notAdminUser, unauth", function(){
     expect.assertions(2);
 
@@ -134,6 +144,16 @@ describe("ensureCorrectUser", function(){
       expect(err).toBeFalsy();
     }
 
+    ensureCorrectUser(req, res, next);
+  });
+
+  test("unauth if no login", function () {
+    expect.assertions(1);
+    const req = {};
+    const res = { locals: {} };
+    const next = function (err) {
+      expect(err instanceof UnauthorizedError).toBeTruthy();
+    };
     ensureCorrectUser(req, res, next);
   });
 

@@ -49,12 +49,12 @@ function ensureLoggedIn(req, res, next) {
 
 function ensureAdmin(req, res, next) {
   try {
+    const user = res.locals.user;
 
     if(!user){
       throw new UnauthorizedError();
     }
 
-    const user = res.locals.user;
 
     if (user && user.isAdmin === true) {
       return next();
@@ -74,20 +74,24 @@ function ensureAdmin(req, res, next) {
 //update function name adminOrSameUser
 //update to check if res.locals.user before accessing it
 function ensureCorrectUser(req, res, next) {
-  const user = res.locals.user;
-
-  const loggedInSameUser = user && (user.username === req.params.username);
-
-  const loggedInAdmin = user && (user.isAdmin === true);
-
+  
   try {
+    const user = res.locals.user;
+    if(!user){
+      throw new UnauthorizedError();
+    }
+
+    const loggedInSameUser = user && (user.username === req.params.username);
+  
+    const loggedInAdmin = user && (user.isAdmin === true);
+  
     if (loggedInSameUser === true || loggedInAdmin == true){
       return next();
     }
     throw new UnauthorizedError();
 
   } catch (err) {
-  return next(err);
+    return next(err);
   }
 }
 

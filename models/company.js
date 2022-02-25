@@ -68,7 +68,7 @@ class Company {
 
   /** Find all companies matching filter(s) like:
    *
-   * name: string
+   * name: string, case-insensitive, matches any part of a string
    * minEmployees: int (>= 0, returns inclusive )
    * maxEmployees: int (>= minEmployees, returns inclusive )
    *
