@@ -68,18 +68,22 @@ function ensureAdmin(req, res, next) {
 
 function ensureCorrectUser(req, res, next) {
   const user = res.locals.user;
-  console.log("Res locals user: ", user.username);
-  console.log("Params user: ", req.params.username);
-  console.log("Are users same?" , user.username === req.params.username);
+
+  const loggedInSameUser = user && (user.username === req.params.username);
+
+  const loggedInAdmin = user && (user.isAdmin === true);
+ 
   try {
-    if (!user || user.username !== req.params.username || user.isAdmin === false) {
-      throw new UnauthorizedError();
-    } else {
+    if (loggedInSameUser === true || loggedInAdmin == true){
       return next();
     }
+    throw new UnauthorizedError();
+
   } catch (err) {
-    return next(err);
+  return next(err);
   }
+}
+
 
 
 module.exports = {

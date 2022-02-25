@@ -140,7 +140,7 @@ describe("ensureCorrectUser", function(){
   test("fails: not admin or same user", function(){
     expect.assertions(2);
 
-    const req = { params: { username: notAdminUser.username}};
+    const req = { params: { username: adminUser.username}};
     const res = { locals: { user: notAdminUser } };
     const next = function (err) {
       expect(err).toBeTruthy();
